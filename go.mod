@@ -3,6 +3,7 @@ module github.com/DimaGitHahahab/ozon-fintech-posts
 go 1.22
 
 require (
+	github.com/graphql-go/graphql v0.8.1
 	github.com/jackc/pgx/v5 v5.5.5
 	github.com/joho/godotenv v1.5.1
 	github.com/kelseyhightower/envconfig v1.4.0
