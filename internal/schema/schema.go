@@ -9,8 +9,8 @@ func NewSchema(resolver *resolvers.Resolver) (graphql.Schema, error) {
 	post := PostObject()
 	comment := CommentObject()
 
-	rootQuery := getQuery(post, comment, resolver)
-	rootMutation := getMutation(post, comment, resolver)
+	rootQuery := query(post, comment, resolver)
+	rootMutation := mutation(post, comment, resolver)
 
 	schemaConfig := graphql.SchemaConfig{
 		Query:    rootQuery,
@@ -19,25 +19,25 @@ func NewSchema(resolver *resolvers.Resolver) (graphql.Schema, error) {
 	return graphql.NewSchema(schemaConfig)
 }
 
-func getQuery(postType, commentType *graphql.Object, resolver *resolvers.Resolver) *graphql.Object {
+func query(postType, commentType *graphql.Object, resolver *resolvers.Resolver) *graphql.Object {
 	return graphql.NewObject(graphql.ObjectConfig{
 		Name: "RootQuery",
 		Fields: graphql.Fields{
-			"posts":            PostsField(postType, resolver),
-			"post":             PostField(postType, resolver),
-			"commentsByPost":   CommentsByPostField(commentType, resolver),
-			"commentsByParent": CommentsByParentField(commentType, resolver),
+			"posts":            postsField(postType, resolver),
+			"post":             postField(postType, resolver),
+			"commentsByPost":   commentsByPostField(commentType, resolver),
+			"commentsByParent": commentsByParentField(commentType, resolver),
 		},
 	})
 }
 
-func getMutation(postType, commentType *graphql.Object, resolver *resolvers.Resolver) *graphql.Object {
+func mutation(postType, commentType *graphql.Object, resolver *resolvers.Resolver) *graphql.Object {
 	return graphql.NewObject(graphql.ObjectConfig{
 		Name: "RootMutation",
 		Fields: graphql.Fields{
-			"createPost":      CreatePostField(postType, resolver),
-			"createComment":   CreateCommentField(commentType, resolver),
-			"disableComments": DisableCommentsField(resolver),
+			"createPost":      createPostField(postType, resolver),
+			"createComment":   createCommentField(commentType, resolver),
+			"disableComments": disableCommentsField(resolver),
 		},
 	})
 }

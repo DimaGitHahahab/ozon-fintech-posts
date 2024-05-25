@@ -5,7 +5,7 @@ import (
 	"github.com/graphql-go/graphql"
 )
 
-func PostsField(postType *graphql.Object, resolver *resolvers.Resolver) *graphql.Field {
+func postsField(postType *graphql.Object, resolver *resolvers.Resolver) *graphql.Field {
 	return &graphql.Field{
 		Type: graphql.NewList(postType),
 		Resolve: func(p graphql.ResolveParams) (any, error) {
@@ -14,7 +14,7 @@ func PostsField(postType *graphql.Object, resolver *resolvers.Resolver) *graphql
 	}
 }
 
-func PostField(postType *graphql.Object, resolver *resolvers.Resolver) *graphql.Field {
+func postField(postType *graphql.Object, resolver *resolvers.Resolver) *graphql.Field {
 	return &graphql.Field{
 		Type: postType,
 		Args: graphql.FieldConfigArgument{
@@ -29,7 +29,7 @@ func PostField(postType *graphql.Object, resolver *resolvers.Resolver) *graphql.
 	}
 }
 
-func CommentsByPostField(commentType *graphql.Object, resolver *resolvers.Resolver) *graphql.Field {
+func commentsByPostField(commentType *graphql.Object, resolver *resolvers.Resolver) *graphql.Field {
 	return &graphql.Field{
 		Type: graphql.NewList(commentType),
 		Args: graphql.FieldConfigArgument{
@@ -56,7 +56,7 @@ func CommentsByPostField(commentType *graphql.Object, resolver *resolvers.Resolv
 	}
 }
 
-func CommentsByParentField(commentType *graphql.Object, resolver *resolvers.Resolver) *graphql.Field {
+func commentsByParentField(commentType *graphql.Object, resolver *resolvers.Resolver) *graphql.Field {
 	return &graphql.Field{
 		Type: graphql.NewList(commentType),
 		Args: graphql.FieldConfigArgument{
@@ -83,7 +83,7 @@ func CommentsByParentField(commentType *graphql.Object, resolver *resolvers.Reso
 	}
 }
 
-func CreatePostField(postType *graphql.Object, resolver *resolvers.Resolver) *graphql.Field {
+func createPostField(postType *graphql.Object, resolver *resolvers.Resolver) *graphql.Field {
 	return &graphql.Field{
 		Type: postType,
 		Args: graphql.FieldConfigArgument{
@@ -110,7 +110,7 @@ func CreatePostField(postType *graphql.Object, resolver *resolvers.Resolver) *gr
 	}
 }
 
-func CreateCommentField(commentType *graphql.Object, resolver *resolvers.Resolver) *graphql.Field {
+func createCommentField(commentType *graphql.Object, resolver *resolvers.Resolver) *graphql.Field {
 	return &graphql.Field{
 		Type: commentType,
 		Args: graphql.FieldConfigArgument{
@@ -142,7 +142,7 @@ func CreateCommentField(commentType *graphql.Object, resolver *resolvers.Resolve
 	}
 }
 
-func DisableCommentsField(resolver *resolvers.Resolver) *graphql.Field {
+func disableCommentsField(resolver *resolvers.Resolver) *graphql.Field {
 	return &graphql.Field{
 		Type: graphql.Boolean,
 		Args: graphql.FieldConfigArgument{
