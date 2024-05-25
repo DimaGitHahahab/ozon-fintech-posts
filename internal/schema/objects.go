@@ -2,7 +2,7 @@ package schema
 
 import "github.com/graphql-go/graphql"
 
-func PostObject() *graphql.Object {
+func postObject() *graphql.Object {
 	return graphql.NewObject(graphql.ObjectConfig{
 		Name: "Post",
 		Fields: graphql.Fields{
@@ -28,7 +28,7 @@ func PostObject() *graphql.Object {
 	})
 }
 
-func CommentObject() *graphql.Object {
+func commentObject() *graphql.Object {
 	return graphql.NewObject(graphql.ObjectConfig{
 		Name: "Comment",
 		Fields: graphql.Fields{

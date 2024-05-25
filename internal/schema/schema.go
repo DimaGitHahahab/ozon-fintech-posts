@@ -6,8 +6,8 @@ import (
 )
 
 func NewSchema(resolver *resolvers.Resolver) (graphql.Schema, error) {
-	post := PostObject()
-	comment := CommentObject()
+	post := postObject()
+	comment := commentObject()
 
 	rootQuery := query(post, comment, resolver)
 	rootMutation := mutation(post, comment, resolver)
