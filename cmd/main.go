@@ -4,9 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"time"
 
-	"github.com/DimaGitHahahab/ozon-fintech-posts/internal/domain"
 	"github.com/DimaGitHahahab/ozon-fintech-posts/internal/repository/postgres"
 	"github.com/DimaGitHahahab/ozon-fintech-posts/pkg/config"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -32,44 +30,29 @@ func main() {
 
 	repo := postgres.New(pool)
 
-	post, err := repo.CreatePost(ctx, &domain.Post{
-		Title:            "My first post!",
-		Content:          "lorem ipsum",
-		AuthorID:         15,
-		CreatedAt:        time.Now(),
-		CommentsDisabled: false,
-	})
+	post, err := repo.GetPost(ctx, 1)
+	if err != nil {
+		log.Fatal(err)
+	}
 	fmt.Println(post)
-	fmt.Println()
-
-	posts, err := repo.GetPosts(ctx)
+	comments, err := repo.GetCommentsByPost(ctx, 1, 5, 0)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	for _, p := range posts {
-		fmt.Println(p)
+	for _, c := range comments {
+		fmt.Println(c)
 	}
 	fmt.Println()
 
-	com, err := repo.CreateComment(ctx, &domain.Comment{
-		PostID:    1,
-		ParentID:  nil,
-		AuthorID:  10,
-		Content:   "nice post, i like it!",
-		CreatedAt: time.Now(),
-	})
+	post, err = repo.GetPost(ctx, 2)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(com)
-	fmt.Println()
-
-	comments, err := repo.GetCommentsByPost(ctx, 1, 10, 0)
+	fmt.Println(post)
+	comments, err = repo.GetCommentsByPost(ctx, 2, 5, 0)
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	for _, c := range comments {
 		fmt.Println(c)
 	}

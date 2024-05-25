@@ -15,18 +15,6 @@ RETURNING id
 `
 
 func (q *Queries) CreateComment(ctx context.Context, comment *domain.Comment) (*domain.Comment, error) {
-	//var parentID pgtype.Int4
-	//if comment.ParentID != nil {
-	//	parentID = pgtype.Int4{
-	//		Int32: int32(*comment.ParentID),
-	//		Valid: true,
-	//	}
-	//} else {
-	//	parentID = pgtype.Int4{
-	//		Valid: false,
-	//	}
-	//}
-
 	row := q.pool.QueryRow(ctx, insertComment,
 		comment.PostID, nil, comment.AuthorID, comment.Content, comment.CreatedAt)
 
