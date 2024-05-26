@@ -1,7 +1,15 @@
 package resolvers
 
+import "fmt"
+
 const maxLength = 2000
 
-func validateComment(comment string) bool {
-	return len(comment) <= maxLength
+var ErrInvalidComment = fmt.Errorf("comment is too long")
+
+func validateComment(comment string) error {
+	if len(comment) <= maxLength {
+		return ErrInvalidComment
+	}
+
+	return nil
 }
