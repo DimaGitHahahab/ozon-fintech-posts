@@ -16,10 +16,8 @@ import (
 	"github.com/DimaGitHahahab/ozon-fintech-posts/internal/server"
 	"github.com/DimaGitHahahab/ozon-fintech-posts/pkg/config"
 	"github.com/DimaGitHahahab/ozon-fintech-posts/pkg/signal"
-	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type App struct {
@@ -75,50 +73,21 @@ func createRepository(ctx context.Context, cfg *config.Config) (repository.Repos
 	case "IN_MEMORY":
 		return in_memory.New(), nil
 	case "POSTGRES":
-		if err := processMigration(cfg.MigrationPath, cfg.DbURL); err != nil {
+		log.Println("Processing migration...")
+		if err := postgres.ProcessMigration(cfg.MigrationPath, cfg.DbURL); err != nil {
 			return nil, fmt.Errorf("failed to process migration: %w", err)
 		}
+		log.Println("Migration is successful")
 
-		pool, err := setupPgxPool(ctx, cfg)
+		log.Println("Setting up pgx pool...")
+		pool, err := postgres.SetupPgxPool(ctx, cfg.DbURL)
 		if err != nil {
 			return nil, fmt.Errorf("failed to setup pgx pool: %w", err)
 		}
+		log.Println("Pgx pool is set up successfully")
+
 		return postgres.New(pool), nil
 	default:
 		return nil, fmt.Errorf("unknown repository type: %s", cfg.Repository)
 	}
-}
-
-func setupPgxPool(ctx context.Context, cfg *config.Config) (*pgxpool.Pool, error) {
-	log.Println("Setting up pgx pool...")
-
-	pgxConfig, err := pgxpool.ParseConfig(cfg.DbURL)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse pgx config: %w", err)
-	}
-
-	pool, err := pgxpool.NewWithConfig(ctx, pgxConfig)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create new pgx pool with config: %w", err)
-	}
-
-	log.Println("Pgx pool initialized successfully")
-	return pool, nil
-}
-
-func processMigration(migrationURL string, dbSource string) error {
-	log.Println("Processing migration...")
-
-	migration, err := migrate.New(migrationURL, dbSource)
-	if err != nil {
-		return fmt.Errorf("failed to create new migration: %w", err)
-	}
-
-	if err = migration.Up(); err != nil && !errors.Is(err, migrate.ErrNoChange) {
-		return fmt.Errorf("failed to migrate up: %w", err)
-	}
-	defer migration.Close()
-
-	log.Println("Migration successful")
-	return nil
 }
