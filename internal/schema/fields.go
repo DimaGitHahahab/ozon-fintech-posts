@@ -1,6 +1,8 @@
 package schema
 
 import (
+	"log"
+
 	"github.com/DimaGitHahahab/ozon-fintech-posts/internal/resolvers"
 	"github.com/graphql-go/graphql"
 )
@@ -9,7 +11,9 @@ func postsField(postType *graphql.Object, resolver *resolvers.Resolver) *graphql
 	return &graphql.Field{
 		Type: graphql.NewList(postType),
 		Resolve: func(p graphql.ResolveParams) (any, error) {
-			return resolver.GetPosts()
+			res, err := resolver.GetPosts(p.Context)
+			logIfNotNil(err)
+			return res, err
 		},
 	}
 }
@@ -24,7 +28,9 @@ func postField(postType *graphql.Object, resolver *resolvers.Resolver) *graphql.
 		},
 		Resolve: func(p graphql.ResolveParams) (any, error) {
 			id, _ := p.Args["id"].(int)
-			return resolver.GetPost(p.Context, PostArgs{ID: id})
+			res, err := resolver.GetPost(p.Context, resolvers.PostArgs{ID: id})
+			logIfNotNil(err)
+			return res, err
 		},
 	}
 }
@@ -47,11 +53,13 @@ func commentsByPostField(commentType *graphql.Object, resolver *resolvers.Resolv
 			postId, _ := p.Args["postId"].(int)
 			limit, _ := p.Args["limit"].(int)
 			offset, _ := p.Args["offset"].(int)
-			return resolver.GetCommentsByPost(p.Context, GetCommentsArgs{
+			res, err := resolver.GetCommentsByPost(p.Context, resolvers.GetCommentsArgs{
 				PostID: postId,
 				Limit:  limit,
 				Offset: offset,
 			})
+			logIfNotNil(err)
+			return res, err
 		},
 	}
 }
@@ -74,11 +82,13 @@ func commentsByParentField(commentType *graphql.Object, resolver *resolvers.Reso
 			parentId, _ := p.Args["parentId"].(int)
 			limit, _ := p.Args["limit"].(int)
 			offset, _ := p.Args["offset"].(int)
-			return resolver.GetCommentsByParent(p.Context, GetCommentsArgs{
+			res, err := resolver.GetCommentsByParent(p.Context, resolvers.GetCommentsArgs{
 				ParentID: parentId,
 				Limit:    limit,
 				Offset:   offset,
 			})
+			logIfNotNil(err)
+			return res, err
 		},
 	}
 }
@@ -101,11 +111,13 @@ func createPostField(postType *graphql.Object, resolver *resolvers.Resolver) *gr
 			title, _ := p.Args["title"].(string)
 			content, _ := p.Args["content"].(string)
 			authorId, _ := p.Args["authorId"].(int)
-			return resolver.CreatePost(p.Context, CreatePostArgs{
+			res, err := resolver.CreatePost(p.Context, resolvers.CreatePostArgs{
 				Title:    title,
 				Content:  content,
 				AuthorID: authorId,
 			})
+			logIfNotNil(err)
+			return res, err
 		},
 	}
 }
@@ -132,12 +144,14 @@ func createCommentField(commentType *graphql.Object, resolver *resolvers.Resolve
 			parentId, _ := p.Args["parentId"].(int)
 			authorId, _ := p.Args["authorId"].(int)
 			content, _ := p.Args["content"].(string)
-			return resolver.CreateComment(p.Context, CreateCommentArgs{
+			res, err := resolver.CreateComment(p.Context, resolvers.CreateCommentArgs{
 				PostID:   postId,
 				ParentID: parentId,
 				AuthorID: authorId,
 				Content:  content,
 			})
+			logIfNotNil(err)
+			return res, err
 		},
 	}
 }
@@ -149,10 +163,22 @@ func disableCommentsField(resolver *resolvers.Resolver) *graphql.Field {
 			"postId": &graphql.ArgumentConfig{
 				Type: graphql.Int,
 			},
+			"authorId": &graphql.ArgumentConfig{
+				Type: graphql.Int,
+			},
 		},
 		Resolve: func(p graphql.ResolveParams) (any, error) {
 			postId, _ := p.Args["postId"].(int)
-			return resolver.DisableComments(p.Context, DisableCommentsArgs{PostID: postId})
+			authorId, _ := p.Args["authorId"].(int)
+			res, err := resolver.DisableComments(p.Context, resolvers.DisableCommentsArgs{PostID: postId, AuthorId: authorId})
+			logIfNotNil(err)
+			return res, err
 		},
+	}
+}
+
+func logIfNotNil(err error) {
+	if err != nil {
+		log.Println("Error response:", err)
 	}
 }

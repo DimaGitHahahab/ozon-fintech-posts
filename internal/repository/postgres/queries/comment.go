@@ -86,3 +86,16 @@ func (q *Queries) GetCommentsByParent(ctx context.Context, parentId int, limit, 
 
 	return comments, nil
 }
+
+const containsComment = `
+SELECT EXISTS(SELECT 1 FROM comments WHERE id = $1)
+`
+
+func (q *Queries) ContainsComment(ctx context.Context, id int) (bool, error) {
+	var exists bool
+	if err := q.pool.QueryRow(ctx, containsComment, id).Scan(&exists); err != nil {
+		return false, fmt.Errorf("can't check if comment exists: %w", err)
+	}
+
+	return exists, nil
+}

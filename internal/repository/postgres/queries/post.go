@@ -71,7 +71,7 @@ func (q *Queries) CreatePost(ctx context.Context, post *domain.Post) (*domain.Po
 
 const updateDisableComments = `
 UPDATE posts
-SET comments_disabled = FALSE
+SET comments_disabled = TRUE
 WHERE id = $1
 `
 
@@ -81,4 +81,17 @@ func (q *Queries) DisableComments(ctx context.Context, postID int) error {
 	}
 
 	return nil
+}
+
+const postExists = `
+SELECT EXISTS(SELECT 1 FROM posts WHERE id = $1)
+`
+
+func (q *Queries) ContainsPost(ctx context.Context, id int) (bool, error) {
+	var exists bool
+	if err := q.pool.QueryRow(ctx, postExists, id).Scan(&exists); err != nil {
+		return false, fmt.Errorf("can't check if post exists: %w", err)
+	}
+
+	return exists, nil
 }

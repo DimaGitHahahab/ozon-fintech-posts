@@ -1,4 +1,4 @@
-package schema
+package resolvers
 
 type PostArgs struct {
 	ID int `json:"id"`
@@ -25,5 +25,6 @@ type GetCommentsArgs struct {
 }
 
 type DisableCommentsArgs struct {
-	PostID int `json:"postId"`
+	PostID   int `json:"postId"`
+	AuthorId int `json:"authorId"`
 }

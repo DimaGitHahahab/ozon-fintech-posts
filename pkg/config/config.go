@@ -8,6 +8,7 @@ import (
 )
 
 type Config struct {
+	HTTPPort      string `envconfig:"HTTP_PORT" required:"true"`
 	DbURL         string `envconfig:"DB_URL" required:"true"`
 	MigrationPath string `envconfig:"MIGRATION_PATH" required:"true"`
 }
