@@ -70,8 +70,12 @@ func commentsByParentField(commentType *graphql.Object, resolver *resolvers.Reso
 			parentId, _ := p.Args["parentId"].(int)
 			limit, _ := p.Args["limit"].(int)
 			offset, _ := p.Args["offset"].(int)
+			var pointerToParent *int
+			if parentId != 0 {
+				pointerToParent = &parentId
+			}
 			res, err := resolver.GetCommentsByParent(p.Context, resolvers.GetCommentsArgs{
-				ParentID: parentId,
+				ParentID: pointerToParent,
 				Limit:    limit,
 				Offset:   offset,
 			})
@@ -118,9 +122,14 @@ func createCommentField(commentType *graphql.Object, resolver *resolvers.Resolve
 			parentId, _ := p.Args["parentId"].(int)
 			authorId, _ := p.Args["authorId"].(int)
 			content, _ := p.Args["content"].(string)
+
+			var pointerToParent *int
+			if parentId != 0 {
+				pointerToParent = &parentId
+			}
 			res, err := resolver.CreateComment(p.Context, resolvers.CreateCommentArgs{
 				PostID:   postId,
-				ParentID: parentId,
+				ParentID: pointerToParent,
 				AuthorID: authorId,
 				Content:  content,
 			})

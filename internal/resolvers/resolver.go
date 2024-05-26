@@ -34,6 +34,10 @@ func (r *Resolver) GetPosts(ctx context.Context) (any, error) {
 }
 
 func (r *Resolver) GetPost(ctx context.Context, args PostArgs) (any, error) {
+	if err := validateID(args.ID); err != nil {
+		return nil, err
+	}
+
 	if err := r.postExists(ctx, args.ID); err != nil {
 		return nil, err
 	}
@@ -47,6 +51,14 @@ func (r *Resolver) GetPost(ctx context.Context, args PostArgs) (any, error) {
 }
 
 func (r *Resolver) GetCommentsByPost(ctx context.Context, args GetCommentsArgs) (any, error) {
+	if err := validateID(args.PostID); err != nil {
+		return nil, err
+	}
+
+	if err := validatePaginationArgs(args.Limit, args.Offset); err != nil {
+		return nil, err
+	}
+
 	if err := r.postExists(ctx, args.PostID); err != nil {
 		return nil, err
 	}
@@ -60,11 +72,19 @@ func (r *Resolver) GetCommentsByPost(ctx context.Context, args GetCommentsArgs) 
 }
 
 func (r *Resolver) GetCommentsByParent(ctx context.Context, args GetCommentsArgs) (any, error) {
-	if err := r.commentExists(ctx, args.ParentID); err != nil {
+	if err := validateID(args.PostID, *args.ParentID); err != nil {
 		return nil, err
 	}
 
-	comments, err := r.repo.GetCommentsByParent(ctx, args.ParentID, args.Limit, args.Offset)
+	if err := validatePaginationArgs(args.Limit, args.Offset); err != nil {
+		return nil, err
+	}
+
+	if err := r.commentExists(ctx, *args.ParentID); err != nil {
+		return nil, err
+	}
+
+	comments, err := r.repo.GetCommentsByParent(ctx, *args.ParentID, args.Limit, args.Offset)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get comments: %w", err)
 	}
@@ -73,6 +93,10 @@ func (r *Resolver) GetCommentsByParent(ctx context.Context, args GetCommentsArgs
 }
 
 func (r *Resolver) CreatePost(ctx context.Context, args CreatePostArgs) (any, error) {
+	if err := validateID(args.AuthorID); err != nil {
+		return nil, err
+	}
+
 	post := &domain.Post{
 		Title:     args.Title,
 		Content:   args.Content,
@@ -89,16 +113,20 @@ func (r *Resolver) CreatePost(ctx context.Context, args CreatePostArgs) (any, er
 }
 
 func (r *Resolver) CreateComment(ctx context.Context, args CreateCommentArgs) (any, error) {
+	if err := validateID(args.PostID, args.AuthorID); err != nil {
+		return nil, err
+	}
+
 	if err := validateComment(args.Content); err != nil {
 		return nil, err
 	}
 
 	comment := &domain.Comment{
 		PostID:    args.PostID,
-		ParentID:  &args.ParentID,
+		ParentID:  args.ParentID,
 		AuthorID:  args.AuthorID,
 		Content:   args.Content,
-		CreatedAt: time.Now(),
+		CreatedAt: time.Now().UTC(),
 	}
 
 	if err := r.postExists(ctx, args.PostID); err != nil {
@@ -117,6 +145,10 @@ func (r *Resolver) CreateComment(ctx context.Context, args CreateCommentArgs) (a
 }
 
 func (r *Resolver) DisableComments(ctx context.Context, args DisableCommentsArgs) (any, error) {
+	if err := validateID(args.PostID, args.AuthorId); err != nil {
+		return nil, err
+	}
+
 	if err := r.postExists(ctx, args.PostID); err != nil {
 		return nil, err
 	}
