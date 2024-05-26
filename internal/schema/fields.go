@@ -39,15 +39,9 @@ func commentsByPostField(commentType *graphql.Object, resolver *resolvers.Resolv
 	return &graphql.Field{
 		Type: graphql.NewList(commentType),
 		Args: graphql.FieldConfigArgument{
-			"postId": &graphql.ArgumentConfig{
-				Type: graphql.Int,
-			},
-			"limit": &graphql.ArgumentConfig{
-				Type: graphql.Int,
-			},
-			"offset": &graphql.ArgumentConfig{
-				Type: graphql.Int,
-			},
+			"postId": &graphql.ArgumentConfig{Type: graphql.Int},
+			"limit":  &graphql.ArgumentConfig{Type: graphql.Int},
+			"offset": &graphql.ArgumentConfig{Type: graphql.Int},
 		},
 		Resolve: func(p graphql.ResolveParams) (any, error) {
 			postId, _ := p.Args["postId"].(int)
@@ -68,15 +62,9 @@ func commentsByParentField(commentType *graphql.Object, resolver *resolvers.Reso
 	return &graphql.Field{
 		Type: graphql.NewList(commentType),
 		Args: graphql.FieldConfigArgument{
-			"parentId": &graphql.ArgumentConfig{
-				Type: graphql.Int,
-			},
-			"limit": &graphql.ArgumentConfig{
-				Type: graphql.Int,
-			},
-			"offset": &graphql.ArgumentConfig{
-				Type: graphql.Int,
-			},
+			"parentId": &graphql.ArgumentConfig{Type: graphql.Int},
+			"limit":    &graphql.ArgumentConfig{Type: graphql.Int},
+			"offset":   &graphql.ArgumentConfig{Type: graphql.Int},
 		},
 		Resolve: func(p graphql.ResolveParams) (any, error) {
 			parentId, _ := p.Args["parentId"].(int)
@@ -97,15 +85,9 @@ func createPostField(postType *graphql.Object, resolver *resolvers.Resolver) *gr
 	return &graphql.Field{
 		Type: postType,
 		Args: graphql.FieldConfigArgument{
-			"title": &graphql.ArgumentConfig{
-				Type: graphql.String,
-			},
-			"content": &graphql.ArgumentConfig{
-				Type: graphql.String,
-			},
-			"authorId": &graphql.ArgumentConfig{
-				Type: graphql.Int,
-			},
+			"title":    &graphql.ArgumentConfig{Type: graphql.String},
+			"content":  &graphql.ArgumentConfig{Type: graphql.String},
+			"authorId": &graphql.ArgumentConfig{Type: graphql.Int},
 		},
 		Resolve: func(p graphql.ResolveParams) (any, error) {
 			title, _ := p.Args["title"].(string)
@@ -126,18 +108,10 @@ func createCommentField(commentType *graphql.Object, resolver *resolvers.Resolve
 	return &graphql.Field{
 		Type: commentType,
 		Args: graphql.FieldConfigArgument{
-			"postId": &graphql.ArgumentConfig{
-				Type: graphql.Int,
-			},
-			"parentId": &graphql.ArgumentConfig{
-				Type: graphql.Int,
-			},
-			"authorId": &graphql.ArgumentConfig{
-				Type: graphql.Int,
-			},
-			"content": &graphql.ArgumentConfig{
-				Type: graphql.String,
-			},
+			"postId":   &graphql.ArgumentConfig{Type: graphql.Int},
+			"parentId": &graphql.ArgumentConfig{Type: graphql.Int},
+			"authorId": &graphql.ArgumentConfig{Type: graphql.Int},
+			"content":  &graphql.ArgumentConfig{Type: graphql.String},
 		},
 		Resolve: func(p graphql.ResolveParams) (any, error) {
 			postId, _ := p.Args["postId"].(int)
@@ -160,12 +134,8 @@ func disableCommentsField(resolver *resolvers.Resolver) *graphql.Field {
 	return &graphql.Field{
 		Type: graphql.Boolean,
 		Args: graphql.FieldConfigArgument{
-			"postId": &graphql.ArgumentConfig{
-				Type: graphql.Int,
-			},
-			"authorId": &graphql.ArgumentConfig{
-				Type: graphql.Int,
-			},
+			"postId":   &graphql.ArgumentConfig{Type: graphql.Int},
+			"authorId": &graphql.ArgumentConfig{Type: graphql.Int},
 		},
 		Resolve: func(p graphql.ResolveParams) (any, error) {
 			postId, _ := p.Args["postId"].(int)
