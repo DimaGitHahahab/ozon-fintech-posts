@@ -1,15 +1,10 @@
+# Running app with postgres image
 compose-up:
 	docker compose up --build && docker compose logs --follow
-
 compose-down:
 	docker compose down --remove-orphans
 
-migrate-create:
-	migrate create -ext sql -seq -dir migrations 'init_schema'
-
-migrate-up:
-	migrate -path migrations -database 'postgres://postgres:password@localhost:5432/posts?sslmode=disable' up
-
+# Running only app
 APP_NAME = posts-app
 DOCKER_IMAGE = $(APP_NAME):latest
 DOCKER_CONTAINER = $(APP_NAME)-container
