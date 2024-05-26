@@ -2,6 +2,7 @@ package schema
 
 import "github.com/graphql-go/graphql"
 
+// postObject is a GraphQL object for domain.Post
 func postObject() *graphql.Object {
 	return graphql.NewObject(graphql.ObjectConfig{
 		Name: "Post",
@@ -28,6 +29,7 @@ func postObject() *graphql.Object {
 	})
 }
 
+// commentObject is a GraphQL object for domain.Comment
 func commentObject() *graphql.Object {
 	return graphql.NewObject(graphql.ObjectConfig{
 		Name: "Comment",

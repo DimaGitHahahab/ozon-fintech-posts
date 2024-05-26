@@ -8,12 +8,13 @@ import (
 	"github.com/DimaGitHahahab/ozon-fintech-posts/internal/repository"
 )
 
+// inMemoryRepository is an in-memory implementation of repository.Repository
 type inMemoryRepository struct {
-	mu        sync.RWMutex
-	posts     map[int]*domain.Post
-	comments  map[int]*domain.Comment
-	postID    int
-	commentID int
+	mu        sync.RWMutex            // concurrent map access protection
+	posts     map[int]*domain.Post    // post id -> post
+	comments  map[int]*domain.Comment // comment id -> comment
+	postID    int                     // autoincrement
+	commentID int                     // autoincrement
 }
 
 func New() repository.Repository {

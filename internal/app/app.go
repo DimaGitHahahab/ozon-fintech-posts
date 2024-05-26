@@ -20,12 +20,14 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
+// App is the main application structure
 type App struct {
 	config  *config.Config
-	sigQuit chan os.Signal
-	srv     *server.Server
+	sigQuit chan os.Signal // signal channel for graceful shutdown
+	srv     *server.Server // GraphQL server
 }
 
+// New creates a new instance of the application with created repository, resolver, and schema
 func New(cfg *config.Config) *App {
 	ctx := context.Background()
 
@@ -33,9 +35,10 @@ func New(cfg *config.Config) *App {
 	if err != nil {
 		log.Fatal("Failed to create repository: ", err)
 	}
-
+	// GraphQL resolver
 	resolver := resolvers.NewResolver(repo)
 
+	// GraphQL schema
 	sch, err := schema.NewSchema(resolver)
 	if err != nil {
 		log.Fatal("Failed to create new GraphQL schema: ", err)
@@ -50,6 +53,7 @@ func New(cfg *config.Config) *App {
 	}
 }
 
+// Run starts the server and waits for a signal to shut down
 func (a *App) Run() {
 	go func() {
 		log.Println("Starting server on port", a.config.HTTPPort)
@@ -68,6 +72,7 @@ func (a *App) Run() {
 	log.Println("Server shutdown is successful")
 }
 
+// createRepository creates a repository based type from the configuration
 func createRepository(ctx context.Context, cfg *config.Config) (repository.Repository, error) {
 	switch cfg.Repository {
 	case "IN_MEMORY":

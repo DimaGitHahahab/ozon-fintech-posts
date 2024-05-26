@@ -5,6 +5,7 @@ import (
 	"github.com/graphql-go/graphql"
 )
 
+// NewSchema creates a new GraphQL schema with the given resolver
 func NewSchema(resolver *resolvers.Resolver) (graphql.Schema, error) {
 	post := postObject()
 	comment := commentObject()
@@ -19,6 +20,7 @@ func NewSchema(resolver *resolvers.Resolver) (graphql.Schema, error) {
 	return graphql.NewSchema(schemaConfig)
 }
 
+// query creates a root query object
 func query(postType, commentType *graphql.Object, resolver *resolvers.Resolver) *graphql.Object {
 	return graphql.NewObject(graphql.ObjectConfig{
 		Name: "RootQuery",
@@ -31,6 +33,7 @@ func query(postType, commentType *graphql.Object, resolver *resolvers.Resolver) 
 	})
 }
 
+// mutation creates a root mutation object
 func mutation(postType, commentType *graphql.Object, resolver *resolvers.Resolver) *graphql.Object {
 	return graphql.NewObject(graphql.ObjectConfig{
 		Name: "RootMutation",

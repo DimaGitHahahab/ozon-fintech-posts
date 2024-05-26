@@ -9,7 +9,8 @@ import (
 
 func postsField(postType *graphql.Object, resolver *resolvers.Resolver) *graphql.Field {
 	return &graphql.Field{
-		Type: graphql.NewList(postType),
+		Type:        graphql.NewList(postType),
+		Description: "Get all posts",
 		Resolve: func(p graphql.ResolveParams) (any, error) {
 			res, err := resolver.GetPosts(p.Context)
 			logIfNotNil(err)
@@ -20,7 +21,8 @@ func postsField(postType *graphql.Object, resolver *resolvers.Resolver) *graphql
 
 func postField(postType *graphql.Object, resolver *resolvers.Resolver) *graphql.Field {
 	return &graphql.Field{
-		Type: postType,
+		Type:        postType,
+		Description: "Get post by id",
 		Args: graphql.FieldConfigArgument{
 			"id": &graphql.ArgumentConfig{
 				Type: graphql.Int,
@@ -37,7 +39,8 @@ func postField(postType *graphql.Object, resolver *resolvers.Resolver) *graphql.
 
 func commentsByPostField(commentType *graphql.Object, resolver *resolvers.Resolver) *graphql.Field {
 	return &graphql.Field{
-		Type: graphql.NewList(commentType),
+		Type:        graphql.NewList(commentType),
+		Description: "Get comments by post id",
 		Args: graphql.FieldConfigArgument{
 			"postId": &graphql.ArgumentConfig{Type: graphql.Int},
 			"limit":  &graphql.ArgumentConfig{Type: graphql.Int},
@@ -60,7 +63,8 @@ func commentsByPostField(commentType *graphql.Object, resolver *resolvers.Resolv
 
 func commentsByParentField(commentType *graphql.Object, resolver *resolvers.Resolver) *graphql.Field {
 	return &graphql.Field{
-		Type: graphql.NewList(commentType),
+		Type:        graphql.NewList(commentType),
+		Description: "Get comments by parent comment id",
 		Args: graphql.FieldConfigArgument{
 			"parentId": &graphql.ArgumentConfig{Type: graphql.Int},
 			"limit":    &graphql.ArgumentConfig{Type: graphql.Int},
@@ -70,6 +74,7 @@ func commentsByParentField(commentType *graphql.Object, resolver *resolvers.Reso
 			parentId, _ := p.Args["parentId"].(int)
 			limit, _ := p.Args["limit"].(int)
 			offset, _ := p.Args["offset"].(int)
+			// making parentId nil if it's 0
 			var pointerToParent *int
 			if parentId != 0 {
 				pointerToParent = &parentId
@@ -87,7 +92,8 @@ func commentsByParentField(commentType *graphql.Object, resolver *resolvers.Reso
 
 func createPostField(postType *graphql.Object, resolver *resolvers.Resolver) *graphql.Field {
 	return &graphql.Field{
-		Type: postType,
+		Type:        postType,
+		Description: "Create new post",
 		Args: graphql.FieldConfigArgument{
 			"title":    &graphql.ArgumentConfig{Type: graphql.String},
 			"content":  &graphql.ArgumentConfig{Type: graphql.String},
@@ -110,7 +116,8 @@ func createPostField(postType *graphql.Object, resolver *resolvers.Resolver) *gr
 
 func createCommentField(commentType *graphql.Object, resolver *resolvers.Resolver) *graphql.Field {
 	return &graphql.Field{
-		Type: commentType,
+		Type:        commentType,
+		Description: "Create new comment",
 		Args: graphql.FieldConfigArgument{
 			"postId":   &graphql.ArgumentConfig{Type: graphql.Int},
 			"parentId": &graphql.ArgumentConfig{Type: graphql.Int},
@@ -122,7 +129,7 @@ func createCommentField(commentType *graphql.Object, resolver *resolvers.Resolve
 			parentId, _ := p.Args["parentId"].(int)
 			authorId, _ := p.Args["authorId"].(int)
 			content, _ := p.Args["content"].(string)
-
+			// parentId == 0 means that we want to create root comment (null parent id)
 			var pointerToParent *int
 			if parentId != 0 {
 				pointerToParent = &parentId
@@ -141,7 +148,8 @@ func createCommentField(commentType *graphql.Object, resolver *resolvers.Resolve
 
 func disableCommentsField(resolver *resolvers.Resolver) *graphql.Field {
 	return &graphql.Field{
-		Type: graphql.Boolean,
+		Type:        graphql.Boolean,
+		Description: "Disable new comments for post",
 		Args: graphql.FieldConfigArgument{
 			"postId":   &graphql.ArgumentConfig{Type: graphql.Int},
 			"authorId": &graphql.ArgumentConfig{Type: graphql.Int},

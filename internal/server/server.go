@@ -9,10 +9,12 @@ import (
 	"github.com/graphql-go/handler"
 )
 
+// Server is a server that handles GraphQL schema
 type Server struct {
 	server *http.Server
 }
 
+// NewServer creates a new GraphQL server
 func NewServer(schema *graphql.Schema) *Server {
 	server := &http.Server{
 		Handler: handler.New(&handler.Config{
@@ -27,6 +29,7 @@ func NewServer(schema *graphql.Schema) *Server {
 	}
 }
 
+// Run starts HTTP server on the given port
 func (s *Server) Run(port string) error {
 	s.server.Addr = net.JoinHostPort("", port)
 
@@ -35,6 +38,7 @@ func (s *Server) Run(port string) error {
 	return s.server.ListenAndServe()
 }
 
+// Shutdown stops HTTP server
 func (s *Server) Shutdown(ctx context.Context) error {
 	return s.server.Shutdown(ctx)
 }

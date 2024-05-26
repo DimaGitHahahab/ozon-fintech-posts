@@ -16,6 +16,7 @@ var (
 	ErrNotAuthor        = fmt.Errorf("only author can disable comments")
 )
 
+// Resolver is a GraphQL resolver that implements business logic
 type Resolver struct {
 	repo repository.Repository
 }
@@ -153,6 +154,7 @@ func (r *Resolver) DisableComments(ctx context.Context, args DisableCommentsArgs
 		return nil, err
 	}
 
+	// check that the author is the same as the author of the post
 	if err := r.authorizeAuthor(ctx, args.PostID, args.AuthorId); err != nil {
 		return nil, err
 	}

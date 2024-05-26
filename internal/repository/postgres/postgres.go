@@ -11,11 +11,13 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+// postgresRepo is a PostgreSQL implementation of repository.Repository
 type postgresRepo struct {
-	*queries.Queries
-	pool *pgxpool.Pool
+	*queries.Queries // SQL queries
+	pool             *pgxpool.Pool
 }
 
+// New creates a new instance of the repository based on connection pool
 func New(pgxPool *pgxpool.Pool) repository.Repository {
 	r := &postgresRepo{
 		Queries: queries.New(pgxPool),
@@ -25,6 +27,7 @@ func New(pgxPool *pgxpool.Pool) repository.Repository {
 	return r
 }
 
+// SetupPgxPool creates a new pool of connections
 func SetupPgxPool(ctx context.Context, DbURL string) (*pgxpool.Pool, error) {
 	pgxConfig, err := pgxpool.ParseConfig(DbURL)
 	if err != nil {
@@ -39,6 +42,7 @@ func SetupPgxPool(ctx context.Context, DbURL string) (*pgxpool.Pool, error) {
 	return pool, nil
 }
 
+// ProcessMigration runs the migration up
 func ProcessMigration(migrationURL string, dbSource string) error {
 	migration, err := migrate.New(migrationURL, dbSource)
 	if err != nil {

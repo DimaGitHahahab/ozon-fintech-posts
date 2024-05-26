@@ -1,5 +1,9 @@
 package resolvers
 
+/*
+	GraphQL arguments for queries and mutations
+*/
+
 type PostArgs struct {
 	ID int `json:"id"`
 }
