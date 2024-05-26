@@ -9,8 +9,9 @@ import (
 
 type Config struct {
 	HTTPPort      string `envconfig:"HTTP_PORT" required:"true"`
-	DbURL         string `envconfig:"DB_URL" required:"true"`
-	MigrationPath string `envconfig:"MIGRATION_PATH" required:"true"`
+	DbURL         string `envconfig:"DB_URL"`
+	MigrationPath string `envconfig:"MIGRATION_PATH"`
+	Repository    string `envconfig:"REPOSITORY" default:"IN_MEMORY" required:"true"` // IN_MEMORY, POSTGRES
 }
 
 func LoadConfig() (*Config, error) {

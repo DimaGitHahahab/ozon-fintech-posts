@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/DimaGitHahahab/ozon-fintech-posts/internal/repository"
+	"github.com/DimaGitHahahab/ozon-fintech-posts/internal/repository/in_memory"
 	"github.com/DimaGitHahahab/ozon-fintech-posts/internal/repository/postgres"
 	"github.com/DimaGitHahahab/ozon-fintech-posts/internal/resolvers"
 	"github.com/DimaGitHahahab/ozon-fintech-posts/internal/schema"
@@ -27,17 +29,12 @@ type App struct {
 }
 
 func New(cfg *config.Config) *App {
-	if err := processMigration(cfg.MigrationPath, cfg.DbURL); err != nil {
-		log.Fatal("Failed to process migration: ", err)
-	}
-
 	ctx := context.Background()
-	pool, err := setupPgxPool(ctx, cfg)
-	if err != nil {
-		log.Fatal("Failed to setup pgx pool: ", err)
-	}
 
-	repo := postgres.New(pool)
+	repo, err := createRepository(ctx, cfg)
+	if err != nil {
+		log.Fatal("Failed to create repository: ", err)
+	}
 
 	resolver := resolvers.NewResolver(repo)
 
@@ -71,6 +68,25 @@ func (a *App) Run() {
 	}
 
 	log.Println("Server shutdown is successful")
+}
+
+func createRepository(ctx context.Context, cfg *config.Config) (repository.Repository, error) {
+	switch cfg.Repository {
+	case "IN_MEMORY":
+		return in_memory.New(), nil
+	case "POSTGRES":
+		if err := processMigration(cfg.MigrationPath, cfg.DbURL); err != nil {
+			return nil, fmt.Errorf("failed to process migration: %w", err)
+		}
+
+		pool, err := setupPgxPool(ctx, cfg)
+		if err != nil {
+			return nil, fmt.Errorf("failed to setup pgx pool: %w", err)
+		}
+		return postgres.New(pool), nil
+	default:
+		return nil, fmt.Errorf("unknown repository type: %s", cfg.Repository)
+	}
 }
 
 func setupPgxPool(ctx context.Context, cfg *config.Config) (*pgxpool.Pool, error) {
