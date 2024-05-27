@@ -20,6 +20,11 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
+const (
+	inMemoryStorage = "IN_MEMORY"
+	postgresStorage = "POSTGRES"
+)
+
 // App is the main application structure
 type App struct {
 	config  *config.Config
@@ -75,9 +80,9 @@ func (a *App) Run() {
 // createRepository creates a repository based type from the configuration
 func createRepository(ctx context.Context, cfg *config.Config) (repository.Repository, error) {
 	switch cfg.Repository {
-	case "IN_MEMORY":
+	case inMemoryStorage:
 		return in_memory.New(), nil
-	case "POSTGRES":
+	case postgresStorage:
 		log.Println("Processing migration...")
 		if err := postgres.ProcessMigration(cfg.MigrationPath, cfg.DbURL); err != nil {
 			return nil, fmt.Errorf("failed to process migration: %w", err)
