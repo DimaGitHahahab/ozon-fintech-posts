@@ -164,6 +164,33 @@ func disableCommentsField(resolver *resolvers.Resolver) *graphql.Field {
 	}
 }
 
+func subscribeField(commentType *graphql.Object, resolver *resolvers.Resolver) *graphql.Field {
+	return &graphql.Field{
+		Type: commentType,
+		Resolve: func(p graphql.ResolveParams) (any, error) {
+			return p.Source, nil
+		},
+		Subscribe: func(p graphql.ResolveParams) (any, error) {
+			posts, _ := p.Args["posts"].([]int)
+
+			c := make(chan any)
+
+			go func() {
+				for {
+					select {
+					case <-p.Context.Done():
+						close(c)
+						return
+					case c <- resolver.Subscribe(p.Context, c, posts):
+					}
+				}
+			}()
+
+			return c, nil
+		},
+	}
+}
+
 func logIfNotNil(err error) {
 	if err != nil {
 		log.Println("Error response:", err)

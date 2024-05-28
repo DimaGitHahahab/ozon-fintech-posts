@@ -12,10 +12,12 @@ func NewSchema(resolver *resolvers.Resolver) (graphql.Schema, error) {
 
 	rootQuery := query(post, comment, resolver)
 	rootMutation := mutation(post, comment, resolver)
+	rootSubscribtion := subscription(comment, resolver)
 
 	schemaConfig := graphql.SchemaConfig{
-		Query:    rootQuery,
-		Mutation: rootMutation,
+		Query:        rootQuery,
+		Mutation:     rootMutation,
+		Subscription: rootSubscribtion,
 	}
 	return graphql.NewSchema(schemaConfig)
 }
@@ -41,6 +43,16 @@ func mutation(postType, commentType *graphql.Object, resolver *resolvers.Resolve
 			"createPost":      createPostField(postType, resolver),
 			"createComment":   createCommentField(commentType, resolver),
 			"disableComments": disableCommentsField(resolver),
+		},
+	})
+}
+
+// subscription create a root subscription object
+func subscription(comment *graphql.Object, resolver *resolvers.Resolver) *graphql.Object {
+	return graphql.NewObject(graphql.ObjectConfig{
+		Name: "RootSubscription",
+		Fields: graphql.Fields{
+			"comment": subscribeField(comment, resolver),
 		},
 	})
 }

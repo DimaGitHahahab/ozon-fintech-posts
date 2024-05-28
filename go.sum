@@ -21,6 +21,8 @@ github.com/gojuno/minimock/v3 v3.3.9 h1:0G/vTYyH4MeOkMTJA7rwjOeR5idj/qicsWTqFxEK
 github.com/gojuno/minimock/v3 v3.3.9/go.mod h1:WtJbR+15lbzpUHoOFtT7Sv1rR885bFxoyHrzoMOmK/k=
 github.com/golang-migrate/migrate/v4 v4.17.1 h1:4zQ6iqL6t6AiItphxJctQb3cFqWiSpMnX7wLTPnnYO4=
 github.com/golang-migrate/migrate/v4 v4.17.1/go.mod h1:m8hinFyWBn0SA4QKHuKh175Pm9wjmxj3S2Mia7dbXzM=
+github.com/gorilla/websocket v1.5.1 h1:gmztn0JnHVt9JZquRuzLw3g4wouNVzKL15iLr/zn/QY=
+github.com/gorilla/websocket v1.5.1/go.mod h1:x3kM2JMyaluk02fnUJpQuwD2dCS5NDG2ZHL0uE0tcaY=
 github.com/graphql-go/graphql v0.8.1 h1:p7/Ou/WpmulocJeEx7wjQy611rtXGQaAcXGqanuMMgc=
 github.com/graphql-go/graphql v0.8.1/go.mod h1:nKiHzRM0qopJEwCITUuIsxk9PlVlwIiiI8pnJEhordQ=
 github.com/graphql-go/handler v0.2.4 h1:gz9q11TUHPNUpqzV8LMa+rkqM5NUuH/nkE3oF2LS3rI=

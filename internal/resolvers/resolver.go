@@ -167,6 +167,12 @@ func (r *Resolver) DisableComments(ctx context.Context, args DisableCommentsArgs
 	return true, nil
 }
 
+// Subscribe sends new comments to the channel linked to the posts
+func (r *Resolver) Subscribe(ctx context.Context, c chan any, posts []int) any {
+	// TODO
+	panic("implement me")
+}
+
 func (r *Resolver) postExists(ctx context.Context, postID int) error {
 	ok, err := r.repo.ContainsPost(ctx, postID)
 	if err != nil {

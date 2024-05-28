@@ -5,6 +5,7 @@ import (
 	"net"
 	"net/http"
 
+	"github.com/DimaGitHahahab/ozon-fintech-posts/internal/subscription"
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/handler"
 )
@@ -14,14 +15,26 @@ type Server struct {
 	server *http.Server
 }
 
+var schema graphql.Schema
+
 // NewServer creates a new GraphQL server
-func NewServer(schema *graphql.Schema) *Server {
+func NewServer(s *graphql.Schema) *Server {
+	schema = *s
+	h := handler.New(&handler.Config{
+		Schema:     s,
+		Pretty:     true,
+		GraphiQL:   true,
+		Playground: true,
+	})
+
+	mux := http.NewServeMux()
+	mux.Handle("/root", h)
+
+	subManager := subscription.New(schema)
+	mux.HandleFunc("/subscriptions", subManager.SubscriptionsHandler)
+
 	server := &http.Server{
-		Handler: handler.New(&handler.Config{
-			Schema:   schema,
-			Pretty:   true,
-			GraphiQL: true,
-		}),
+		Handler: mux,
 	}
 
 	return &Server{
@@ -32,8 +45,6 @@ func NewServer(schema *graphql.Schema) *Server {
 // Run starts HTTP server on the given port
 func (s *Server) Run(port string) error {
 	s.server.Addr = net.JoinHostPort("", port)
-
-	http.Handle("/root", s.server.Handler)
 
 	return s.server.ListenAndServe()
 }
