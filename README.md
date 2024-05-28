@@ -23,6 +23,14 @@
 
 You can connect to GraphQL to see the schema and run queries at ```localhost:8080/root```
 
+Subscriptions are available at ```localhost:8080/subscriptions```. Websocket message to subscribe:
+```json
+{
+  "posts": [1, 2, 3],
+   "query": "subscription { comment { id, postId, parentId, authorId, content, createdAt } }"
+}
+```
+
 ### Note
 
 In Postgres option, by default there are some mock posts and comments being added in
