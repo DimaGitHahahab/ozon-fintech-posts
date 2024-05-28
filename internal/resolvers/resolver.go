@@ -182,27 +182,28 @@ func (r *Resolver) DisableComments(ctx context.Context, args DisableCommentsArgs
 // Subscribe sends new comments to the channel linked to the posts
 func (r *Resolver) Subscribe(ctx context.Context, c chan any, posts []int) {
 	for _, postID := range posts {
-		postChan := make(chan *domain.Comment)
+		if r.postExists(ctx, postID) == nil {
+			postChan := make(chan *domain.Comment)
+			r.mu.Lock()
+			r.postChannels[postID] = append(r.postChannels[postID], postChan)
+			r.mu.Unlock()
 
-		r.mu.Lock()
-		r.postChannels[postID] = append(r.postChannels[postID], postChan)
-		r.mu.Unlock()
-
-		// Start a goroutine that listens for new comments on the channel
-		go func() {
-			for {
-				select {
-				case <-ctx.Done(): // context canceled, clean up
-					r.mu.Lock()
-					delete(r.postChannels, postID)
-					r.mu.Unlock()
-					close(postChan)
-					return
-				case comment := <-postChan:
-					c <- comment
+			// Start a goroutine that listens for new comments on the channel
+			go func() {
+				for {
+					select {
+					case <-ctx.Done(): // context canceled, clean up
+						r.mu.Lock()
+						delete(r.postChannels, postID)
+						r.mu.Unlock()
+						close(postChan)
+						return
+					case comment := <-postChan:
+						c <- comment
+					}
 				}
-			}
-		}()
+			}()
+		}
 	}
 }
 
