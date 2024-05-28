@@ -36,7 +36,7 @@ func (m *Manager) SubscriptionsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	go m.handleSubscription(conn)
+	m.handleSubscription(conn)
 }
 
 func (m *Manager) handleSubscription(conn *websocket.Conn) {
@@ -79,6 +79,7 @@ func (m *Manager) subscribe(ctx context.Context, subscriptionCancelFn context.Ca
 	}
 	m.subscribers.Store(&sub, struct{}{})
 
+	ctx = context.WithValue(ctx, "posts", msg.Posts)
 	go func() {
 		subscribeParams := graphql.Params{
 			Context:       ctx,
@@ -119,8 +120,6 @@ func (m *Manager) manageUnsub(
 
 func sendMessage(r *graphql.Result, msg SubscribeMessage, sub subscriber) error {
 	message, err := json.Marshal(map[string]any{
-		"type":    "data",
-		"posts":   msg.Posts,
 		"payload": r.Data,
 	})
 	if err != nil {

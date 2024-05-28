@@ -3,6 +3,7 @@ package resolvers
 import (
 	"context"
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/DimaGitHahahab/ozon-fintech-posts/internal/domain"
@@ -18,11 +19,13 @@ var (
 
 // Resolver is a GraphQL resolver that implements business logic
 type Resolver struct {
-	repo repository.Repository
+	repo         repository.Repository
+	postChannels map[int][]chan *domain.Comment // postID
+	mu           sync.Mutex
 }
 
 func NewResolver(repo repository.Repository) *Resolver {
-	return &Resolver{repo: repo}
+	return &Resolver{repo: repo, postChannels: make(map[int][]chan *domain.Comment)}
 }
 
 func (r *Resolver) GetPosts(ctx context.Context) (any, error) {
@@ -142,6 +145,15 @@ func (r *Resolver) CreateComment(ctx context.Context, args CreateCommentArgs) (a
 		return nil, fmt.Errorf("failed to create comment: %w", err)
 	}
 
+	// Send the new comment to all subscribers
+	r.mu.Lock()
+	if postChans, ok := r.postChannels[args.PostID]; ok {
+		for _, postChan := range postChans {
+			postChan <- savedComment
+		}
+	}
+	r.mu.Unlock()
+
 	return savedComment, nil
 }
 
@@ -168,9 +180,30 @@ func (r *Resolver) DisableComments(ctx context.Context, args DisableCommentsArgs
 }
 
 // Subscribe sends new comments to the channel linked to the posts
-func (r *Resolver) Subscribe(ctx context.Context, c chan any, posts []int) any {
-	// TODO
-	panic("implement me")
+func (r *Resolver) Subscribe(ctx context.Context, c chan any, posts []int) {
+	for _, postID := range posts {
+		postChan := make(chan *domain.Comment)
+
+		r.mu.Lock()
+		r.postChannels[postID] = append(r.postChannels[postID], postChan)
+		r.mu.Unlock()
+
+		// Start a goroutine that listens for new comments on the channel
+		go func() {
+			for {
+				select {
+				case <-ctx.Done(): // context canceled, clean up
+					r.mu.Lock()
+					delete(r.postChannels, postID)
+					r.mu.Unlock()
+					close(postChan)
+					return
+				case comment := <-postChan:
+					c <- comment
+				}
+			}
+		}()
+	}
 }
 
 func (r *Resolver) postExists(ctx context.Context, postID int) error {
